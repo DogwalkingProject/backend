@@ -5,7 +5,7 @@ A Node.js Express app
 ## To run locally
 
 Set Enviroment Variables in .env file <br/>
-`JWT_SECRET=` [Generate JWT Secret Key] (https://www.ibm.com/docs/da/order-management?topic=SSGTJF/configuration/t_GeneratingJWTToken.htm) to generate JWT Secret Key  <br />
+`JWT_SECRET=` [Generate JWT Secret Key](https://www.ibm.com/docs/da/order-management?topic=SSGTJF/configuration/t_GeneratingJWTToken.htm) to generate JWT Secret Key  <br />
 `PORT=` <br />
 `REDIS=`localhost:8001 (Default redis port) <br />
 `GOOGLE_SECRET=` <br />
