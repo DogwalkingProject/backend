@@ -8,11 +8,14 @@ const router = Router();
 
 router.get('/logout', async (req, res) => {
     try {
-        const { refresh } = req.cookies;
+        const { refresh, 'user-id': userId } = req.cookies;
         // todo remove refresh token from DB 
-
-        if (refresh)
-            return res.clearCookie('refresh').send();
+        console.log(refresh, userId, "REFRESH?");
+        if (refresh) {
+            await checkAndConnect(redisClient); 
+            await redisClient.del(`${userId}:${refresh}`) // Delete Refresh Token from
+            return res.clearCookie('refresh').clearCookie('user-id').send();
+        }
     } catch {
         return res.send();
     }
@@ -44,8 +47,8 @@ router.post('', async (req, res) => {
 
 // Gets new Access Token with Refresh token 
 router.get('/refresh', async (req, res) => {
-  
 
+    console.log(req.cookies);
     try {
         if (!req.cookies.refresh)
             return res.status(401).json({ error: "Invalid Refresh Token" })
@@ -53,14 +56,15 @@ router.get('/refresh', async (req, res) => {
             if (req.cookies['user-id'] && req.cookies.refresh) {
                 const { refresh, "user-id": userId } = req.cookies;
                 await checkAndConnect(redisClient);
-                const refreshToken = await redisClient.hGet(`user:${userId}`, 'refreshToken')
+                const dbRefreshToken = await redisClient.get(`${userId}:${refresh}`)
 
-                if (refreshToken === refresh) {
-                    const accessToken = generateJwtToken({ userId, refresh: false });
-                    const expiryDate = Date.now() + 20000;
+                if (dbRefreshToken) {
+                    const accessToken = generateJwtToken({ userId, refresh: false }, '30m');
+                    const expiryDate = Date.now() + 20 * 1000;
                     const newRefreshToken = crypto.randomUUID();
-                    await redisClient.hSet(`user:${userId}`, ['refreshToken', newRefreshToken])
-                    res.cookie('refresh', newRefreshToken, { maxAge: 200000, httpOnly: true })
+                    await redisClient.set(`${userId}:${newRefreshToken}`, req.ip)
+                    await redisClient.del(`${userId}:${refresh}`) // Delete Refresh Token from
+                    res.cookie('refresh', newRefreshToken, { maxAge: 60 * 60 * 24 * 30 * 1000, httpOnly: true })
                     res.json({ accessToken, accessTokenExpiry: expiryDate })
                 }
 
@@ -114,13 +118,12 @@ router.post("/google", async (req, res) => {
             redisClient.hSet(`user:${userId}`, ['email', email, 'password', 'null'])
         }
         redisClient.hSet(`user:${userId}`, ['refreshToken', refreshToken])
-        const accessToken = generateJwtToken({ userId, refresh: false });
-        const expiryDate = Date.now() + 20000;
+        const accessToken = generateJwtToken({ userId, refresh: false }, '30m');
+        const expiryDate = Date.now() + 20 * 1000;
         res.header('Access-Control-Allow-Credentials', 'true')
-        await redisClient.setEx(`${userId}:${refreshToken}`, 200, req.ip,) // Set Value as Users Ip to see Devices 
-        res.cookie('refresh', refreshToken, { maxAge: 200000, httpOnly: true })
+        await redisClient.setEx(`${userId}:${refreshToken}`, 60 * 60 * 24 * 200, req.ip,) // Set Value as Users Ip to see Devices 
+        res.cookie('refresh', refreshToken, { maxAge: 60 * 60 * 24 * 30 * 1000, httpOnly: true })
         res.cookie('user-id', userId, { httpOnly: true }) // Sets Refresh token as Cookie 
-        console.log('refreshToken : ', refreshToken);
         res.json({ accessToken, accessTokenExpiry: expiryDate }).status(200);
     } catch (e) {
         console.log(e);

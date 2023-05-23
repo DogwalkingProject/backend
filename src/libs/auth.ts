@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 import dot from 'dotenv'
 dot.config();
-export function generateJwtToken(obj: object) {
+export function generateJwtToken(obj: object, time: string) {
     if (process.env.JWT_SECRET)
-        return jwt.sign(obj, process.env.JWT_SECRET as string, { expiresIn: '20s' })
+        return jwt.sign(obj, process.env.JWT_SECRET as string, { expiresIn: time })
     else return null;
 }
 

@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import routes from './routes';
 import cookieParser from 'cookie-parser';
+import { testDb } from './models';
 dotenv.config();
 
 
@@ -14,6 +15,7 @@ app.use(cors({
     methods: "GET,POST,PUT,DELETE,OPTIONS",
     credentials:true
 }))
+
 app.use(express.json())
 app.use(cookieParser());
 app.use(function (req, res, next) {
@@ -25,7 +27,7 @@ app.use(function (req, res, next) {
 app.get('/', (req: Request, res: Response) => {
     res.send('Express + TypeScript Server');
 })
-
+testDb(); 
 app.use(routes);
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
