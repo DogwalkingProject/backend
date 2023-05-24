@@ -4,7 +4,7 @@ import dot from 'dotenv';
 
 dot.config();
 // Middleware for JWT verification
-export const verifyToken = (req: Request & {user: string | JwtPayload}, res: Response, next: NextFunction) => {
+export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     // Get the JWT token from the request header
     const token = req.headers.authorization?.split(' ')[1];
 
@@ -15,9 +15,9 @@ export const verifyToken = (req: Request & {user: string | JwtPayload}, res: Res
     try {
         // Verify and decode the JWT token
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET as string);
-
+        console.log(decodedToken, ": Decoded Token"); 
         // Attach the decoded payload to the request object
-        req.user = decodedToken;
+        (req as any).user = decodedToken;
 
         // Proceed to the next middleware or route handler
         next();

@@ -1,7 +1,9 @@
 import { DataTypes, Model } from "sequelize";
 import { sqlClient } from ".";
 
-class User extends Model { }
+class User extends Model { 
+   
+}
 
 User.init({
     id: {
@@ -14,7 +16,7 @@ User.init({
     },
     fullName: {
         type: DataTypes.STRING, 
-        allowNull: false 
+        allowNull: true 
     },
     address: {
         type: DataTypes.STRING, 

@@ -7,7 +7,7 @@ A Node.js Express app
 Set Enviroment Variables in .env file <br/>
 `JWT_SECRET=` [Generate JWT Secret Key](https://www.ibm.com/docs/da/order-management?topic=SSGTJF/configuration/t_GeneratingJWTToken.htm)  <br />
 `PORT=` <br />
-`REDIS=`localhost:8001 (Default redis port) <br />
+`REDIS=`localhost:6379 (Default redis port) <br />
 `GOOGLE_SECRET=` <br />
 `GOOGLE_CLIENT_ID=` <br />
 `OAUTH_REDIRECT=`http://lvh.me:3000 (Use lvh.me(website that proxies for Localhost) because localhost isn't allowed on Google OATUH) <br>

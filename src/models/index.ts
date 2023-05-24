@@ -1,6 +1,6 @@
 import { Sequelize, DataTypes } from 'sequelize';
 
-export const sqlClient = new Sequelize('postgres', 'postgres', 'mypassword', {
+export const sqlClient = new Sequelize('postgres', 'pguser', 'password', {
     host: 'localhost',
     dialect: 'postgres'
 })
@@ -12,4 +12,4 @@ export async function testDb() {
         console.error('Unable to connect to the database:', error);
     }
 }
-sqlClient.sync(); 
+sqlClient.sync({}); 

@@ -1,0 +1,20 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    volumes: 
+      - postgres:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8002:8080
+volumes: 
+  redis_data: 
+  postgres: 

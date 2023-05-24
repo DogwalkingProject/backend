@@ -7,19 +7,28 @@ Pet.init({
     id: {
         primaryKey: true,
         type: DataTypes.UUID,
+        allowNull: false
     },
     petName: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     weight: {
-        type: DataTypes.INTEGER
-    }, 
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    birthday: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     breed: {
-        type: DataTypes.STRING
-    }, 
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     note: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: true
     }
-}, {sequelize: sqlClient, modelName: 'Pet'})
-   
+}, { sequelize: sqlClient, modelName: 'Pet' })
+
 export default Pet; 

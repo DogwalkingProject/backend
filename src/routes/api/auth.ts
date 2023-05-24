@@ -3,6 +3,7 @@ import { generateJwtToken, verifyJwtToken } from '../../libs/auth';
 import { getGoogleOauthToken, getGoogleUser } from '../../libs/googleAuth';
 import { checkAndConnect, redisClient } from '../../libs/redis';
 import crypto from 'crypto';
+import User from '../../models/user';
 
 const router = Router();
 
@@ -107,8 +108,7 @@ router.post("/google", async (req, res) => {
     try {
         const { access_token, id_token } = await getGoogleOauthToken({ code });
         const { email } = await getGoogleUser({ access_token, id_token });
-        // todo CHECK IF USER IN DB
-        // todo IF NOT ADD USER TO DB WITH NULL PASSWORD 
+     
         await checkAndConnect(redisClient);
         let userId = await redisClient.hGet('users', email);
         const refreshToken = crypto.randomUUID();
@@ -116,6 +116,7 @@ router.post("/google", async (req, res) => {
             userId = crypto.randomUUID();
             redisClient.hSet('users', [email, userId])
             redisClient.hSet(`user:${userId}`, ['email', email, 'password', 'null'])
+            await User.create({id: userId, username: email })
         }
         redisClient.hSet(`user:${userId}`, ['refreshToken', refreshToken])
         const accessToken = generateJwtToken({ userId, refresh: false }, '30m');
